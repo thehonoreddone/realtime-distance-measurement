@@ -1,27 +1,3 @@
-"""
-Referans Nesne ile Mesafe Ölçümü
-=================================
-Bu uygulama bilinen uzunlukta bir referans nesne kullanarak iki nesne arasındaki mesafeyi ölçer.
-
-Çalışma Prensibi:
-1. Kalibrasyon Aşaması: Uzunluğu bilinen bir nesne kameraya gösterilir
-2. Piksel/cm oranı hesaplanır
-3. Ölçüm Aşaması: İki nesne konulur ve aralarındaki mesafe ölçülür
-
-ÖNEMLİ: Kamera SABİT tutulmalıdır! Kamera hareket ederse kalibrasyon bozulur.
-        Kamera hareket ettiyseniz 'c' tuşuna basarak yeniden kalibrasyon yapın.
-
-Kullanım:
-    python referans_nesne_mesafe_olcumu.py
-    
-Tuşlar:
-    'c' - Kalibrasyon modu (referans nesne ile)
-    'n' - İki nokta seçerek mesafe ölçümü
-    's' - Mevcut ölçümü Excel'e kaydet
-    'r' - Kayıtları sıfırla
-    'q' - Çıkış
-"""
-
 import cv2
 import numpy as np
 import pandas as pd
@@ -31,22 +7,8 @@ import math
 
 
 class ReferansNesneMesafeOlcucu:
-    """
-    Referans nesne tabanlı mesafe ölçüm sınıfı.
-    
-    Bu sınıf:
-    1. Bilinen uzunlukta bir referans nesne ile kalibrasyon yapar
-    2. Piksel/cm oranını hesaplar
-    3. Kullanıcının tıkladığı iki nokta arasındaki mesafeyi ölçer
-    4. Sonuçları Excel'e kaydeder
-    
-    ÖNEMLİ: Kamera kalibrasyondan sonra SABİT tutulmalıdır!
-    """
     
     def __init__(self):
-        """
-        ReferansNesneMesafeOlcucu sınıfını başlatır.
-        """
         # Kalibrasyon değerleri
         self.kalibre_edildi = False
         self.piksel_cm_orani = None
@@ -74,20 +36,7 @@ class ReferansNesneMesafeOlcucu:
         )
     
     def fare_callback(self, event, x, y, flags, param):
-        """
-        Fare olaylarını işleyen callback fonksiyonu.
-        
-        Parametreler:
-        -------------
-        event : int
-            Fare olayı türü (sol tık, sağ tık, vb.)
-        x, y : int
-            Fare pozisyonu
-        flags : int
-            Ek bayraklar
-        param : any
-            Ek parametreler
-        """
+
         if event == cv2.EVENT_LBUTTONDOWN:
             if self.mod == "kalibrasyon":
                 # Kalibrasyon modunda nokta ekle
@@ -108,27 +57,11 @@ class ReferansNesneMesafeOlcucu:
                         self.mesafe_hesapla_ve_goster()
     
     def iki_nokta_arasi_mesafe_piksel(self, nokta1, nokta2):
-        """
-        İki nokta arasındaki Öklid mesafesini piksel cinsinden hesaplar.
-        
-        Parametreler:
-        -------------
-        nokta1, nokta2 : tuple
-            (x, y) koordinatları
-            
-        Döndürür:
-        ---------
-        float
-            Piksel cinsinden mesafe
-        """
         return math.sqrt((nokta2[0] - nokta1[0])**2 + (nokta2[1] - nokta1[1])**2)
     
     def kalibrasyon_tamamla(self):
-        """
-        Kalibrasyon noktalarını kullanarak piksel/cm oranını hesaplar.
-        """
         if len(self.kalibrasyon_noktalari) != 2:
-            print("⚠ Kalibrasyon için 2 nokta gerekli!")
+            print("Kalibrasyon için 2 nokta gerekli!")
             return
         
         # Piksel cinsinden mesafe
@@ -141,7 +74,7 @@ class ReferansNesneMesafeOlcucu:
         self.piksel_cm_orani = piksel_mesafe / self.referans_uzunluk_cm
         self.kalibre_edildi = True
         
-        print(f"\n✓ KALİBRASYON TAMAMLANDI")
+        print(f"\n KALİBRASYON TAMAMLANDI")
         print(f"  Referans uzunluk: {self.referans_uzunluk_cm} cm")
         print(f"  Piksel mesafe: {piksel_mesafe:.2f} piksel")
         print(f"  Piksel/cm oranı: {self.piksel_cm_orani:.4f}")
@@ -149,45 +82,28 @@ class ReferansNesneMesafeOlcucu:
         self.mod = "bekleme"
     
     def kalibrasyon_baslat(self, referans_uzunluk_cm):
-        """
-        Kalibrasyon modunu başlatır.
-        
-        Parametreler:
-        -------------
-        referans_uzunluk_cm : float
-            Referans nesnenin gerçek uzunluğu (cm)
-        """
         self.referans_uzunluk_cm = referans_uzunluk_cm
         self.kalibrasyon_noktalari = []
         self.kalibre_edildi = False
         self.mod = "kalibrasyon"
         
-        print(f"\n--- KALİBRASYON MODU ---")
         print(f"Referans nesne uzunluğu: {referans_uzunluk_cm} cm")
-        print(f"Referans nesnenin iki ucuna tıklayın...")
     
     def olcum_baslat(self):
-        """
-        Ölçüm modunu başlatır.
-        """
         if not self.kalibre_edildi:
-            print("⚠ Önce kalibrasyon yapılmalı! 'c' tuşuna basın.")
+            print("Önce kalibrasyon yapılmalı!")
             return False
         
         self.secili_noktalar = []
         self.son_mesafe = None
         self.mod = "olcum"
         
-        print(f"\n--- ÖLÇÜM MODU ---")
         print(f"Ölçülecek iki noktaya tıklayın...")
         return True
     
     def mesafe_hesapla_ve_goster(self):
-        """
-        Seçilen iki nokta arasındaki mesafeyi hesaplar ve gösterir.
-        """
         if len(self.secili_noktalar) != 2:
-            print("⚠ 2 nokta seçilmeli!")
+            print("2 nokta seçilmeli!")
             return
         
         # Piksel cinsinden mesafe
@@ -199,47 +115,34 @@ class ReferansNesneMesafeOlcucu:
         # CM cinsinden mesafe
         self.son_mesafe = piksel_mesafe / self.piksel_cm_orani
         
-        print(f"\n✓ ÖLÇÜM SONUCU: {self.son_mesafe:.2f} cm")
+        print(f"\n ÖLÇÜM SONUCU: {self.son_mesafe:.2f} cm")
         print(f"  Piksel mesafe: {piksel_mesafe:.2f}")
         
         self.mod = "bekleme"
     
     def frame_isle(self, frame):
-        """
-        Bir video frame'ini işleyerek görselleştirme yapar.
-        
-        Parametreler:
-        -------------
-        frame : numpy.ndarray
-            BGR formatında video frame'i
-            
-        Döndürür:
-        ---------
-        numpy.ndarray
-            İşlenmiş frame
-        """
-        self.mevcut_frame = frame.copy()
-        gosterim = frame.copy()
+        self.mevcut_frame = frame.copy() # Kameradan alınan görüntü.
+        gosterim = frame.copy() # Bir kopya üzerinde çizim yapılır (gosterim). Orijinal frame başka işlemler için saklanabilir.Bu görüntüye çember, yazı, çizgi, bilgi paneli vs. çizilecek.
         
         # Kalibrasyon noktalarını çiz
         if self.mod == "kalibrasyon":
             for i, nokta in enumerate(self.kalibrasyon_noktalari):
-                cv2.circle(gosterim, nokta, 8, (0, 255, 255), -1)  # Sarı
+                cv2.circle(gosterim, nokta, 8, (0, 255, 255), -1)  # Sarı, nokta: cemberin merkezi. 8 piksele yarıçap, -1 ise çember doldurulmuş
                 cv2.putText(gosterim, f"K{i+1}", 
-                           (nokta[0] + 10, nokta[1] - 10),
-                           cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 255), 2)
+                           (nokta[0] + 10, nokta[1] - 10), # yazıyı kaydırıyor sağa ve yukarı  
+                           cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 255), 2) # 0.6 → fontScale, 2 → thickness
             
             # Kalibrasyon çizgisi
             if len(self.kalibrasyon_noktalari) == 2:
                 cv2.line(gosterim, 
                         self.kalibrasyon_noktalari[0],
                         self.kalibrasyon_noktalari[1],
-                        (0, 255, 255), 2, cv2.LINE_AA)
+                        (0, 255, 255), 2, cv2.LINE_AA) # Anti-Aliasing (pürüzsüz çizgi), 2 px kalınlık
                 
                 # Referans uzunluğu yaz
                 orta = (
-                    (self.kalibrasyon_noktalari[0][0] + self.kalibrasyon_noktalari[1][0]) // 2,
-                    (self.kalibrasyon_noktalari[0][1] + self.kalibrasyon_noktalari[1][1]) // 2
+                    (self.kalibrasyon_noktalari[0][0] + self.kalibrasyon_noktalari[1][0]) // 2, # mesafe yazısının ortada gözükmesi için
+                    (self.kalibrasyon_noktalari[0][1] + self.kalibrasyon_noktalari[1][1]) // 2 # iki noktanın ortasını bulur,
                 )
                 cv2.putText(gosterim, f"REF: {self.referans_uzunluk_cm} cm",
                            (orta[0] - 50, orta[1] - 15),
@@ -266,13 +169,13 @@ class ReferansNesneMesafeOlcucu:
             )
             
             mesafe_text = f"{self.son_mesafe:.2f} cm"
-            (text_w, text_h), _ = cv2.getTextSize(mesafe_text, 
-                                                  cv2.FONT_HERSHEY_SIMPLEX, 
-                                                  1, 2)
+            (text_w, text_h), _ = cv2.getTextSize(mesafe_text,  #mesafe yazısının arkasındaki beyaz kutu yukselik genislik alır oto ayarlanır.
+                                                  cv2.FONT_HERSHEY_SIMPLEX,  
+                                                  1, 2) # 1 → fontScale, 2 → thickness
             cv2.rectangle(gosterim, 
-                         (orta[0] - text_w//2 - 10, orta[1] - text_h - 10),
+                         (orta[0] - text_w//2 - 10, orta[1] - text_h - 10), #Kutuyu yazının soluna kaydırır, # Kutuyu yukarı taşır
                          (orta[0] + text_w//2 + 10, orta[1] + 10),
-                         (255, 255, 255), -1)
+                         (255, 255, 255), -1) # -1 dikdörtgeni doldur demek. 1 olursa sadece kenar. 2 olursa daha kalın kenar
             cv2.putText(gosterim, mesafe_text,
                        (orta[0] - text_w//2, orta[1]),
                        cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
@@ -284,15 +187,12 @@ class ReferansNesneMesafeOlcucu:
         return gosterim
     
     def bilgi_paneli_ekle(self, frame):
-        """
-        Frame'e bilgi paneli ekler.
-        """
         # Yarı saydam arka plan
-        overlay = frame.copy()
-        cv2.rectangle(overlay, (10, 10), (400, 180), (0, 0, 0), -1)
-        cv2.addWeighted(overlay, 0.7, frame, 0.3, 0, frame)
+        overlay = frame.copy() # üzerine çizilecek görüntü
+        cv2.rectangle(overlay, (10, 10), (400, 180), (0, 0, 0), -1) # sol üst köşe,sağ alt köşe, siyah renk,dikdörtgen doldur.
+        cv2.addWeighted(overlay, 0.7, frame, 0.3, 0, frame) # Sonuç: %70 karanlık – %30 orijinal görüntü → yarı saydam panel.overlay %70,frame %30,gamma (ekstra parlaklık eklemez) 50 olsaydı görüntüyü ekstra aydınlatır.
         
-        y = 35
+        y = 35 # satır ayarlama,Bu ekrana yazılacak yazıların başlangıç yüksekliğidir.
         
         # Mod durumu
         mod_renk = {
@@ -306,7 +206,7 @@ class ReferansNesneMesafeOlcucu:
             "olcum": "ÖLÇÜM - 2 nokta seçin"
         }
         cv2.putText(frame, f"Mod: {mod_text[self.mod]}", 
-                   (20, y), cv2.FONT_HERSHEY_SIMPLEX, 0.6, mod_renk[self.mod], 1)
+                   (20, y), cv2.FONT_HERSHEY_SIMPLEX, 0.6, mod_renk[self.mod], 1) # Yazı ekranın solundan 20px içeride başlasın x koordinatı
         
         y += 25
         if self.kalibre_edildi:
@@ -337,11 +237,8 @@ class ReferansNesneMesafeOlcucu:
         
     
     def olcum_kaydet(self):
-        """
-        Son ölçümü listeye ekler.
-        """
         if self.son_mesafe is None:
-            print("⚠ Kaydedilecek ölçüm yok!")
+            print("Kaydedilecek ölçüm yok!")
             return None
         
         kayit = {
@@ -360,10 +257,6 @@ class ReferansNesneMesafeOlcucu:
         return kayit
     
     def excel_kaydet(self):
-        """
-        Tüm ölçümleri Excel dosyasına kaydeder.
-        Mevcut dosya varsa üzerine ekler.
-        """
         if not self.olcum_kayitlari:
             print("⚠ Kaydedilecek ölçüm yok!")
             return
@@ -396,7 +289,6 @@ class ReferansNesneMesafeOlcucu:
 
 
 def main():
-    """Ana program döngüsü."""
     # Ölçücü oluştur
     olcucu = ReferansNesneMesafeOlcucu()
     cap = cv2.VideoCapture(0)

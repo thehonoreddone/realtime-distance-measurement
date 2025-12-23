@@ -1,7 +1,3 @@
-# 📏 Gerçek Zamanlı Mesafe Ölçümü Projesi
-
-Bu proje, kamera kullanarak iki nesne arasındaki mesafeyi ölçmek için iki farklı yöntem sunar. Hem laptop kamerası hem de telefon kamerası (IP Webcam) ile çalışabilir. Ölçüm sonuçları Excel dosyasına kaydedilir.
-
 ## 📁 Proje Yapısı
 
 ```
