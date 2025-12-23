@@ -222,7 +222,7 @@ class ReferansNesneMesafeOlcucu:
         gosterim = frame.copy()
         
         # Kalibrasyon noktalarını çiz
-        if self.mod == "kalibrasyon" or self.kalibre_edildi:
+        if self.mod == "kalibrasyon":
             for i, nokta in enumerate(self.kalibrasyon_noktalari):
                 cv2.circle(gosterim, nokta, 8, (0, 255, 255), -1)  # Sarı
                 cv2.putText(gosterim, f"K{i+1}", 
